@@ -1,0 +1,21 @@
+{
+  "name": "SecurePixel",
+  "short_name": "SecurePixel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FFD600",
+  "description": "Encrypt images locally in your browser using AES-GCM.",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/GvMm4MWW/34882.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/GvMm4MWW/34882.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
