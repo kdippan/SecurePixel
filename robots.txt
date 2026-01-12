@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://securepixel.dippanbhusal.tech/sitemap.xml
+Sitemap: https://securepixel.vercel.app/sitemap.xml
