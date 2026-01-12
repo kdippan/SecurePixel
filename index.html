@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePixel | Cloud-Sync Image Encryption</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Saira:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FFD600',
+                        dark: '#1a1a1a',
+                        darker: '#111111'
+                    },
+                    fontFamily: {
+                        sans: ['Saira', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-dark dark:text-gray-100 transition-colors duration-300">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <div id="image-viewer" class="fixed inset-0 z-[60] bg-black/90 hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <button id="close-viewer" class="absolute top-5 right-5 text-white text-4xl hover:text-primary transition-colors">&times;</button>
+        <img id="full-image" src="" alt="Full Screen" class="max-w-full max-h-screen rounded shadow-2xl scale-95 transition-transform duration-300">
+    </div>
+
+    <nav class="sticky top-0 z-40 bg-white/80 dark:bg-darker/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2 text-2xl font-bold font-sans">
+            <i class="fa-solid fa-shield-halved text-primary"></i>
+            <span>Secure<span class="text-primary">Pixel</span></span>
+        </div>
+        <div class="flex gap-4">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+                <i class="fa-solid fa-moon text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <header class="max-w-4xl mx-auto text-center pt-16 pb-10 px-4">
+        <h1 class="text-4xl md:text-5xl font-bold font-sans mb-6 leading-tight">
+            Protect Your Images with <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Military-Grade Encryption</span>
+        </h1>
+        <p class="font-serif text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+            Turn sensitive photos into digital noise directly in your browser. Automatically uploaded to the cloud for secure sharing. No data is ever stored on our servers.
+        </p>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mb-20">
+        <div class="bg-white dark:bg-darker rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+            
+            <div class="flex border-b border-gray-200 dark:border-gray-700">
+                <button class="flex-1 py-4 font-sans font-bold text-lg text-gray-500 hover:text-primary transition-colors border-b-2 border-transparent" onclick="switchTab('encrypt')" id="tab-encrypt">
+                    <i class="fa-solid fa-lock mr-2"></i> Encrypt
+                </button>
+                <button class="flex-1 py-4 font-sans font-bold text-lg text-gray-500 hover:text-primary transition-colors border-b-2 border-transparent" onclick="switchTab('decrypt')" id="tab-decrypt">
+                    <i class="fa-solid fa-key mr-2"></i> Decrypt
+                </button>
+            </div>
+
+            <div id="encrypt-section" class="p-6 md:p-10 section-content">
+                
+                <div id="enc-drop-zone" class="border-3 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-10 text-center cursor-pointer hover:border-primary hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all duration-300 group">
+                    <i class="fa-solid fa-cloud-arrow-up text-5xl text-gray-400 group-hover:text-primary group-hover:scale-110 transition-transform mb-4"></i>
+                    <p class="font-sans text-xl font-medium mb-2">Drag & Drop Images Here</p>
+                    <p class="font-serif text-sm text-gray-500">or click to browse files</p>
+                    <input type="file" id="enc-files" accept="image/*" multiple class="hidden">
+                </div>
+
+                <div id="enc-previews" class="flex flex-wrap gap-4 mt-6 min-h-[0px] transition-all"></div>
+
+                <div class="mt-8 grid md:grid-cols-3 gap-6 items-end">
+                    <div class="md:col-span-2 relative group">
+                        <input type="password" id="enc-password" placeholder=" " class="peer w-full bg-gray-50 dark:bg-dark border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 pt-6 pb-2 focus:outline-none focus:border-primary focus:ring-0 transition-colors">
+                        <label class="absolute left-4 top-4 text-gray-500 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-xs peer-focus:text-primary font-sans font-medium pointer-events-none">
+                            Set Encryption Password
+                        </label>
+                        <button class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors" onclick="togglePassword('enc-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button onclick="processBulkEncryption()" class="w-full bg-primary hover:bg-yellow-400 text-darker font-bold font-sans py-4 rounded-lg shadow-lg hover:shadow-primary/50 transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Encrypt & Upload
+                    </button>
+                </div>
+
+                <div id="enc-bulk-actions" class="hidden mt-8 text-right border-t border-gray-200 dark:border-gray-800 pt-4">
+                    <button onclick="downloadAll('enc')" class="text-sm font-bold text-gray-600 hover:text-primary dark:text-gray-400 transition-colors">
+                        <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
+                    </button>
+                </div>
+
+                <div id="enc-results-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8"></div>
+            </div>
+
+            <div id="decrypt-section" class="p-6 md:p-10 section-content hidden">
+                
+                <div id="dec-drop-zone" class="border-3 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-10 text-center cursor-pointer hover:border-primary hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all duration-300 group">
+                    <i class="fa-solid fa-unlock-keyhole text-5xl text-gray-400 group-hover:text-primary group-hover:scale-110 transition-transform mb-4"></i>
+                    <p class="font-sans text-xl font-medium mb-2">Drop Noise Images (PNG)</p>
+                    <input type="file" id="dec-files" accept="image/png" multiple class="hidden">
+                </div>
+
+                <div id="dec-previews" class="flex flex-wrap gap-4 mt-6"></div>
+
+                <div class="mt-8 grid md:grid-cols-3 gap-6 items-end">
+                    <div class="md:col-span-2 relative">
+                        <input type="password" id="dec-password" placeholder=" " class="peer w-full bg-gray-50 dark:bg-dark border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 pt-6 pb-2 focus:outline-none focus:border-primary focus:ring-0 transition-colors">
+                        <label class="absolute left-4 top-4 text-gray-500 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-4 peer-focus:top-1 peer-focus:text-xs peer-focus:text-primary font-sans font-medium pointer-events-none">
+                            Enter Original Password
+                        </label>
+                        <button class="absolute right-4 top-4 text-gray-400 hover:text-primary transition-colors" onclick="togglePassword('dec-password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button onclick="processBulkDecryption()" class="w-full bg-gray-800 hover:bg-black dark:bg-white dark:text-black dark:hover:bg-gray-200 text-white font-bold font-sans py-4 rounded-lg shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-unlock"></i> Decrypt All
+                    </button>
+                </div>
+
+                 <div id="dec-bulk-actions" class="hidden mt-8 text-right border-t border-gray-200 dark:border-gray-800 pt-4">
+                    <button onclick="downloadAll('dec')" class="text-sm font-bold text-gray-600 hover:text-primary dark:text-gray-400 transition-colors">
+                        <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
+                    </button>
+                </div>
+
+                <div id="dec-results-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="max-w-4xl mx-auto px-4 mb-20">
+        <h2 class="text-3xl font-sans font-bold text-center mb-10 relative inline-block left-1/2 -translate-x-1/2 after:content-[''] after:block after:w-16 after:h-1 after:bg-primary after:mx-auto after:mt-2">Frequently Asked Questions</h2>
+        
+        <div class="space-y-4">
+            <details class="group bg-white dark:bg-darker rounded-lg shadow-sm p-4 cursor-pointer">
+                <summary class="font-sans font-bold flex justify-between items-center list-none">
+                    <span>Is my data safe?</span>
+                    <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-primary"></i></span>
+                </summary>
+                <p class="text-gray-600 dark:text-gray-400 mt-4 font-serif leading-relaxed">
+                    Absolutely. Encryption happens entirely within your browser using the Web Crypto API. The "noise" images are uploaded to ImgBB only to provide you with a shareable link, but without the password, that noise is mathematically impossible to decode.
+                </p>
+            </details>
+
+            <details class="group bg-white dark:bg-darker rounded-lg shadow-sm p-4 cursor-pointer">
+                <summary class="font-sans font-bold flex justify-between items-center list-none">
+                    <span>What happens if I lose my password?</span>
+                    <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-primary"></i></span>
+                </summary>
+                <p class="text-gray-600 dark:text-gray-400 mt-4 font-serif leading-relaxed">
+                    Your data is lost forever. We use AES-256 encryption, which cannot be brute-forced with current technology. There is no "forgot password" feature because we don't store your passwords.
+                </p>
+            </details>
+
+            <details class="group bg-white dark:bg-darker rounded-lg shadow-sm p-4 cursor-pointer">
+                <summary class="font-sans font-bold flex justify-between items-center list-none">
+                    <span>Why are the images noisy?</span>
+                    <span class="transition group-open:rotate-180"><i class="fa-solid fa-chevron-down text-primary"></i></span>
+                </summary>
+                <p class="text-gray-600 dark:text-gray-400 mt-4 font-serif leading-relaxed">
+                    The noise is the actual encrypted data visualized as pixels. This makes the file a valid PNG image, allowing it to be hosted on standard image hosting sites like ImgBB.
+                </p>
+            </details>
+        </div>
+    </section>
+
+    <footer class="bg-white dark:bg-darker border-t border-gray-200 dark:border-gray-800 mt-auto py-12">
+        <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+            <div class="text-center md:text-left">
+                <h3 class="font-sans font-bold text-xl mb-2">Dippan Bhusal</h3>
+                <p class="text-gray-500 font-serif text-sm">Building secure web experiences for everyone.</p>
+            </div>
+            <div class="flex justify-center md:justify-end gap-6">
+                <a href="https://github.com/KDippan" target="_blank" class="text-2xl text-gray-400 hover:text-primary transition-colors"><i class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com/in/KDippan" target="_blank" class="text-2xl text-gray-400 hover:text-blue-600 transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://twitter.com/DippanBhusal" target="_blank" class="text-2xl text-gray-400 hover:text-blue-400 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+        </div>
+        <div class="text-center mt-8 text-gray-400 text-xs font-sans">
+            &copy; 2026 SecurePixel. Open Source & Private.
+        </div>
+    </footer>
+
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="dippanbhusal" data-description="Support me on Buy me a coffee!" data-message="Sponser me!" data-color="#FF813F" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+    <script src="script.js"></script>
+</body>
+</html>
