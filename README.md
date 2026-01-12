@@ -134,7 +134,7 @@ You can also support me directly on GitHub to help fund my open-source work.
 * **GitHub:** [@KDippan](https://github.com/KDippan)
 * **LinkedIn:** [Dippan Bhusal](https://linkedin.com/in/KDippan)
 * **Twitter:** [@DippanBhusal](https://twitter.com/DippanBhusal)
-* **Email:** [dippanbhusal@gmail.com](mailto:dippanbhusal@gmail.com)
+* **Email:** [dippan.connect@gmail.com](mailto:dippan.connect@gmail.com)
 
 ---
 
