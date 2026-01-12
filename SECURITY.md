@@ -14,7 +14,7 @@ Since this is a web-based tool, only the latest deployment and the `main` branch
 
 If you have discovered a security vulnerability in SecurePixel (e.g., a flaw in the encryption implementation, data leakage, or XSS vulnerability), please report it privately.
 
-1.  Email **dippanbhusal@gmail.com** with the subject "SECURITY: SecurePixel Vulnerability".
+1.  Email **dippan.connect@gmail.com** with the subject "SECURITY: SecurePixel Vulnerability".
 2.  Include details about the vulnerability and steps to reproduce it.
 3.  We will respond as quickly as possible (usually within 48 hours).
 
