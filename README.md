@@ -25,8 +25,21 @@ It utilizes military-grade **AES-GCM encryption** to transform your images into 
 ### 🌟 Why Use SecurePixel?
 * **Privacy First:** Your unencrypted photos never leave your device.
 * **Steganographic Output:** Encrypted data is disguised as a glitchy "noise" image.
-* **Zero Knowledge:** We don't store your passwords or your data.
+* **Transparent Analytics:** We use anonymous analytics to improve the app, but **only** if you grant explicit consent.
 * **Cloud Ready:** Automatically uploads encrypted noise to the cloud for easy link sharing.
+
+---
+
+## 🔒 Privacy & Security
+
+We take privacy seriously. Here is exactly how we handle data:
+
+1.  **Zero-Knowledge Encryption:** The encryption process happens entirely in your browser (`window.crypto.subtle`). We (the developers) never see your original images, passwords, or encryption keys.
+2.  **Consent-Based Analytics:** We use Google Analytics to track page performance.
+    * **Default:** Analytics are BLOCKED by default.
+    * **Consent:** Scripts only load if you click "Accept" on the banner.
+    * **Proof:** We store a local timestamp of your consent decision to ensure compliance.
+3.  **No Personal Data:** The analytics data is anonymized (`anonymize_ip: true`) and never linked to your encrypted content.
 
 ---
 
