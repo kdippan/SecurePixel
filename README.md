@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![SecurePixel Banner](https://via.placeholder.com/1200x630.png?text=SecurePixel+Open+Source+Privacy+Tool)
+![SecurePixel Banner](https://i.postimg.cc/mD1YFZjj/Secure-Pixel.png)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Deployment](https://img.shields.io/badge/vercel-deployed-black?style=flat-square&logo=vercel)](https://securepixel.vercel.app)
 [![Security](https://img.shields.io/badge/encryption-AES--256--GCM-yellow?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
